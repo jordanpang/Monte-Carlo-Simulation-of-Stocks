@@ -28,18 +28,18 @@ weights /= np.sum(weights)
 mc_sims = 100 #Number of simulations
 T = 150 #Time in days
 
-meanM = np.full(shape=(T, len(weights)), fill_value=meanReturns)
-meanM = meanM.T #Transpose
+meanM = np.full(shape=(T, len(weights)), fill_value=meanReturns) #Fills an array with mean returns data as a T by number of stocks matrix
+meanM = meanM.T #Transpose to be number of stocks by T
 
 portfolio_sims = np.full(shape=(T, mc_sims), fill_value=0.0)
 
 initialPortfolio = 30000
 
 for m in range(0, mc_sims):
-    Z = np.random.normal(size=(T, len(weights)))
-    L = np.linalg.cholesky(covMatrix)
-    dailyReturns = meanM + np.inner(L, Z)
-    portfolio_sims[:,m] = np.cumprod(np.inner(weights, dailyReturns.T) + 1) * initialPortfolio
+    Z = np.random.normal(size=(T, len(weights))) #Random data uncorrelated T by number of stocks
+    L = np.linalg.cholesky(covMatrix) #Lower triangular matrix number of stocks by number of stocks
+    dailyReturns = meanM + np.inner(L, Z) #Gives correlation with covariance properties to the random data and adds to mean returns
+    portfolio_sims[:,m] = np.cumprod(np.inner(weights, dailyReturns.T) + 1) * initialPortfolio #Cummulative effect of daily changes
 
 plt.plot(portfolio_sims)
 plt.ylabel('Porfolio Value ($)')
